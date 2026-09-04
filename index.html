@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Flappy Bill — NEAT</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <div>
+        <p class="kicker">The White House Arcade · NEAT</p>
+        <h1>Flappy Bill</h1>
+        <p class="lede">
+          Same sprites, sky, monuments, columns, and physics as
+          <a href="https://www.whitehouse.gov/arcade/flappy-bill/">whitehouse.gov/arcade/flappy-bill</a>.
+          Fifty eagles evolve a growing neural net each generation.
+        </p>
+      </div>
+      <dl class="stats">
+        <div><dt>Gen</dt><dd id="gen">1</dd></div>
+        <div><dt>Alive</dt><dd id="alive">50</dd></div>
+        <div><dt>Score</dt><dd id="score">0</dd></div>
+        <div><dt>Best</dt><dd id="best">0</dd></div>
+        <div><dt>Species</dt><dd id="species">1</dd></div>
+        <div><dt>Innov</dt><dd id="innov">0</dd></div>
+        <div><dt>Nodes</dt><dd id="nodes">—</dd></div>
+      </dl>
+    </header>
+
+    <main>
+      <section class="cabinet">
+        <canvas id="game" width="256" height="224" aria-label="Flappy Bill"></canvas>
+      </section>
+      <section class="panel grow">
+        <h2>Brain of the living champ</h2>
+        <canvas id="net" width="560" height="224"></canvas>
+        <p class="hint">Green excites flap. Red inhibits. Hidden nodes appear as NEAT mutates.</p>
+      </section>
+    </main>
+
+    <footer>
+      <label>Turbo <input id="turbo" type="range" min="1" max="24" value="4" /> <span id="turboLabel">4×</span></label>
+      <button id="pause" type="button">Pause</button>
+      <button id="reset" type="button">New population</button>
+    </footer>
+
+    <script src="physics.js"></script>
+    <script src="official-render.js"></script>
+    <script src="neat.js"></script>
+    <script src="train.js"></script>
+  </body>
+</html>
