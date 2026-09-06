@@ -3,12 +3,13 @@
   --ink: #f4f4f5;
   --muted: #a1a1aa;
   --line: rgba(255, 255, 255, 0.1);
-  --line-hover: rgba(255, 255, 255, 0.16);
   --dial: #212121;
   --dial-row: rgba(255, 255, 255, 0.05);
   --dial-row-hover: rgba(255, 255, 255, 0.1);
   --radius: 14px;
   --pill: 999px;
+  --pad: 12px;
+  --top: 52px;
 }
 
 * {
@@ -18,11 +19,19 @@
 html,
 body {
   margin: 0;
-  min-height: 100%;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
   background: var(--bg);
   color: var(--ink);
   font-family: Outfit, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
 }
 
 a {
@@ -31,23 +40,39 @@ a {
 }
 
 .top {
+  flex: 0 0 var(--top);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 18px 28px 8px;
+  padding: 0 16px;
+}
+
+.brand-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
 }
 
 .brand {
   font-weight: 600;
-  font-size: 17px;
+  font-size: 16px;
   letter-spacing: -0.03em;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .nav-pill {
   display: flex;
   gap: 4px;
-  padding: 4px;
+  padding: 3px;
   background: #141414;
   border: 1px solid var(--line);
   border-radius: var(--pill);
@@ -55,9 +80,9 @@ a {
 
 .nav-pill a,
 .nav-pill span {
-  padding: 7px 14px;
+  padding: 6px 12px;
   border-radius: var(--pill);
-  font-size: 13px;
+  font-size: 12px;
   color: var(--muted);
   transition: background 160ms ease, color 160ms ease;
 }
@@ -73,84 +98,70 @@ a {
   font-weight: 600;
 }
 
-.hero {
-  padding: 28px 28px 8px;
-  max-width: 720px;
-}
-
-.eyebrow {
-  margin: 0 0 10px;
-  color: var(--muted);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-h1 {
-  margin: 0;
-  font-size: clamp(34px, 5vw, 52px);
-  font-weight: 600;
-  letter-spacing: -0.045em;
-  line-height: 1.05;
-}
-
-.lede {
-  margin: 14px 0 0;
-  color: var(--muted);
-  font-size: 16px;
-  line-height: 1.5;
-  max-width: 48ch;
-}
-
-.stage {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
-  padding: 28px;
-  flex-wrap: wrap;
+.app {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(280px, 1.15fr) minmax(300px, 1fr);
+  gap: var(--pad);
+  padding: 0 var(--pad) var(--pad);
 }
 
 .cabinet {
-  line-height: 0;
-  padding: 10px;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
   background: #111;
   border: 1px solid var(--line);
-  border-radius: 22px;
+  border-radius: 18px;
+  container-type: size;
 }
 
 #game {
   display: block;
-  width: 768px;
-  max-width: min(768px, 100%);
-  height: auto;
+  width: min(100cqw, calc(100cqh * 256 / 224));
+  height: min(100cqh, calc(100cqw * 224 / 256));
   background: #12417c;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  border-radius: 12px;
+  border-radius: 10px;
+}
+
+.side {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: var(--pad);
 }
 
 .dial {
-  width: 280px;
-  flex: 0 0 280px;
   background: var(--dial);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
-  padding: 6px 8px 10px;
+  padding: 4px 8px 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 4px 10px;
 }
 
 .folder {
-  padding: 8px 6px 10px;
-  border-bottom: 1px solid var(--line);
+  padding: 6px 4px 4px;
+  min-width: 0;
 }
 
-.folder:last-child {
-  border-bottom: 0;
+.folder.grow {
+  grid-column: 1 / -1;
 }
 
 .folder h3 {
-  margin: 0 4px 8px;
-  font-size: 11px;
+  margin: 0 4px 6px;
+  font-size: 10px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.55);
   letter-spacing: 0.04em;
@@ -169,12 +180,12 @@ h1 {
   border: 1px solid transparent;
   background: var(--dial-row);
   color: rgba(255, 255, 255, 0.78);
-  min-height: 36px;
+  min-height: 30px;
   border-radius: 8px;
   font-family: "Geist Mono", ui-monospace, monospace;
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
-  transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+  transition: background 140ms ease, color 140ms ease;
 }
 
 .seg button:hover,
@@ -197,49 +208,54 @@ h1 {
 
 .rows {
   margin: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 2px 8px;
 }
 
 .rows > div {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  min-height: 32px;
-  padding: 0 8px;
+  min-height: 26px;
+  padding: 0 6px;
   border-radius: 8px;
-}
-
-.rows > div:hover {
-  background: var(--dial-row);
 }
 
 .rows dt {
   color: rgba(255, 255, 255, 0.55);
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .rows dd {
   margin: 0;
   font-family: "Geist Mono", ui-monospace, monospace;
-  font-size: 13px;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
 
 .brain {
-  padding: 8px 28px 48px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: #111;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 8px 10px 10px;
 }
 
 .brain-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
+  gap: 12px;
+  flex: 0 0 auto;
+  margin-bottom: 6px;
 }
 
 .brain h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: -0.03em;
 }
@@ -247,35 +263,34 @@ h1 {
 .brain p {
   margin: 0;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 12px;
 }
 
 #net {
   display: block;
   width: 100%;
-  height: 420px;
-  background: #111;
-  border: 1px solid var(--line);
-  border-radius: 22px;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  background: transparent;
   image-rendering: auto;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 980px) {
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  }
+
+  .cabinet {
+    justify-content: center;
+  }
+
   .dial {
-    flex: 1 1 280px;
-  }
-}
-
-@media (max-width: 820px) {
-  .top,
-  .hero,
-  .stage,
-  .brain {
-    padding-left: 16px;
-    padding-right: 16px;
+    grid-template-columns: 1fr 1fr;
   }
 
-  #game {
-    width: 100%;
+  .rows {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }

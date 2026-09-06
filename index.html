@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Flappy Bill — NEAT</title>
     <meta name="description" content="Fifty eagles evolve a neural net on the official White House Arcade Flappy Bill playfield." />
     <meta name="theme-color" content="#0a0a0a" />
@@ -14,7 +14,10 @@
   </head>
   <body>
     <nav class="top">
-      <a class="brand" href="./">Flappy Bill</a>
+      <div class="brand-wrap">
+        <a class="brand" href="./">Flappy Bill</a>
+        <p class="eyebrow">NEAT · 50 birds</p>
+      </div>
       <div class="nav-pill" role="navigation">
         <span class="on">Train</span>
         <a href="https://github.com/arjunkshah12345-hash/neat-flappy-bill">Source</a>
@@ -22,63 +25,56 @@
       </div>
     </nav>
 
-    <header class="hero">
-      <p class="eyebrow">NEAT · 50 birds / generation</p>
-      <h1>Keep the bill in the air.</h1>
-      <p class="lede">
-        Official White House Arcade sprites and physics.
-        The chrome is a dial — pick a speed and watch the champ brain grow layers.
-      </p>
-    </header>
-
-    <section class="stage">
+    <main class="app">
       <div class="cabinet">
         <canvas id="game" width="256" height="224" aria-label="Flappy Bill"></canvas>
       </div>
 
-      <aside class="dial" aria-label="Trainer controls">
-        <div class="folder">
-          <h3>Speed</h3>
-          <div class="seg" id="speeds" role="group" aria-label="Simulation speed">
-            <button type="button" data-speed="1">1×</button>
-            <button type="button" data-speed="2">2×</button>
-            <button type="button" data-speed="4" class="active">4×</button>
-            <button type="button" data-speed="8">8×</button>
-            <button type="button" data-speed="16">16×</button>
-            <button type="button" data-speed="32">32×</button>
+      <aside class="side">
+        <div class="dial" aria-label="Trainer controls">
+          <div class="folder">
+            <h3>Speed</h3>
+            <div class="seg" id="speeds" role="group" aria-label="Simulation speed">
+              <button type="button" data-speed="1">1×</button>
+              <button type="button" data-speed="2">2×</button>
+              <button type="button" data-speed="4" class="active">4×</button>
+              <button type="button" data-speed="8">8×</button>
+              <button type="button" data-speed="16">16×</button>
+              <button type="button" data-speed="32">32×</button>
+            </div>
+          </div>
+
+          <div class="folder">
+            <h3>Run</h3>
+            <div class="actions">
+              <button id="pause" type="button">Pause</button>
+              <button id="reset" type="button">New pop</button>
+            </div>
+          </div>
+
+          <div class="folder grow">
+            <h3>Population</h3>
+            <dl class="rows">
+              <div><dt>Gen</dt><dd id="gen">1</dd></div>
+              <div><dt>Alive</dt><dd id="alive">50</dd></div>
+              <div><dt>Score</dt><dd id="score">0</dd></div>
+              <div><dt>Best</dt><dd id="best">0</dd></div>
+              <div><dt>Species</dt><dd id="species">1</dd></div>
+              <div><dt>Innov</dt><dd id="innov">0</dd></div>
+              <div><dt>Nodes</dt><dd id="nodes">—</dd></div>
+            </dl>
           </div>
         </div>
 
-        <div class="folder">
-          <h3>Run</h3>
-          <div class="actions">
-            <button id="pause" type="button">Pause</button>
-            <button id="reset" type="button">New pop</button>
+        <section class="brain">
+          <div class="brain-head">
+            <h2>Champ brain</h2>
+            <p>Input · hidden · output</p>
           </div>
-        </div>
-
-        <div class="folder">
-          <h3>Population</h3>
-          <dl class="rows">
-            <div><dt>Gen</dt><dd id="gen">1</dd></div>
-            <div><dt>Alive</dt><dd id="alive">50</dd></div>
-            <div><dt>Score</dt><dd id="score">0</dd></div>
-            <div><dt>Best</dt><dd id="best">0</dd></div>
-            <div><dt>Species</dt><dd id="species">1</dd></div>
-            <div><dt>Innov</dt><dd id="innov">0</dd></div>
-            <div><dt>Nodes</dt><dd id="nodes">—</dd></div>
-          </dl>
-        </div>
+          <canvas id="net" width="960" height="420" aria-label="Neural network"></canvas>
+        </section>
       </aside>
-    </section>
-
-    <section class="brain">
-      <div class="brain-head">
-        <h2>Champ brain</h2>
-        <p>Input layer · hidden layers · output. Hidden nodes appear when NEAT splits a gene.</p>
-      </div>
-      <canvas id="net" width="960" height="420" aria-label="Neural network"></canvas>
-    </section>
+    </main>
 
     <script src="physics.js"></script>
     <script src="official-render.js"></script>
