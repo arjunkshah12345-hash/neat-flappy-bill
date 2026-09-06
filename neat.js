@@ -36,16 +36,27 @@
   function createGenome() {
     const nodes = [];
     for (let i = 0; i < INPUTS; i++) nodes.push({ id: i, type: "input" });
-    const outId = INPUTS;
+    const hiddenIds = [INPUTS, INPUTS + 1, INPUTS + 2, INPUTS + 3];
+    hiddenIds.forEach((id) => nodes.push({ id, type: "hidden" }));
+    const outId = INPUTS + hiddenIds.length;
     nodes.push({ id: outId, type: "output" });
     const genes = [];
-    for (let i = 0; i < INPUTS; i++) {
+    for (const hid of hiddenIds) {
+      for (let i = 0; i < INPUTS; i++) {
+        genes.push({
+          in: i,
+          out: hid,
+          weight: randn() * 0.9,
+          enabled: true,
+          innov: nextInnov(i, hid),
+        });
+      }
       genes.push({
-        in: i,
+        in: hid,
         out: outId,
-        weight: randn() * 1.2,
+        weight: randn() * 0.9,
         enabled: true,
-        innov: nextInnov(i, outId),
+        innov: nextInnov(hid, outId),
       });
     }
     return { nodes, genes, nextNode: outId + 1, fitness: 0 };
@@ -238,34 +249,46 @@
   };
 
   NEAT.layoutNetwork = function (g, w, h, opts) {
-    const padL = opts && opts.padL != null ? opts.padL : 148;
-    const padR = opts && opts.padR != null ? opts.padR : 128;
-    const padT = opts && opts.padT != null ? opts.padT : 44;
-    const padB = opts && opts.padB != null ? opts.padB : 68;
+    const padL = opts && opts.padL != null ? opts.padL : 70;
+    const padR = opts && opts.padR != null ? opts.padR : 70;
+    const padT = opts && opts.padT != null ? opts.padT : 54;
+    const padB = opts && opts.padB != null ? opts.padB : 28;
     const depths = NEAT.nodeDepths(g);
-    const maxD = Math.max(1, ...depths.values());
-    const buckets = new Map();
-    for (const n of g.nodes) {
-      const d = depths.get(n.id) || 0;
-      if (!buckets.has(d)) buckets.set(d, []);
-      buckets.get(d).push(n);
+    const inputs = g.nodes.filter((n) => n.type === "input").sort((a, b) => a.id - b.id);
+    const hidden = g.nodes.filter((n) => n.type === "hidden").sort((a, b) => a.id - b.id);
+    const outputs = g.nodes.filter((n) => n.type === "output").sort((a, b) => a.id - b.id);
+    const hiddenDepths = [...new Set(hidden.map((n) => depths.get(n.id) || 1))].sort((a, b) => a - b);
+    const layers = [{ key: "input", label: "Input layer", nodes: inputs }];
+    if (hiddenDepths.length) {
+      hiddenDepths.forEach((d, i) => {
+        layers.push({
+          key: "hidden-" + d,
+          label: hiddenDepths.length === 1 ? "Hidden layer" : "Hidden " + (i + 1),
+          nodes: hidden.filter((n) => (depths.get(n.id) || 1) === d),
+        });
+      });
+    } else {
+      layers.push({ key: "hidden-empty", label: "Hidden layer", nodes: [] });
     }
-    const pos = new Map();
+    layers.push({ key: "output", label: "Output", nodes: outputs });
+
     const innerW = w - padL - padR;
     const innerH = h - padT - padB;
-    for (const [d, list] of buckets) {
-      list.sort((a, b) => a.id - b.id);
-      const x = padL + (innerW * d) / maxD;
-      list.forEach((n, i) => {
+    const pos = new Map();
+    layers.forEach((layer, li) => {
+      const x = padL + (layers.length === 1 ? innerW / 2 : (innerW * li) / (layers.length - 1));
+      layer.x = x;
+      layer.nodes.forEach((n, i) => {
+        const count = Math.max(1, layer.nodes.length);
         pos.set(n.id, {
           x,
-          y: padT + (innerH * (i + 1)) / (list.length + 1),
-          depth: d,
+          y: padT + (innerH * (i + 1)) / (count + 1),
+          depth: li,
           type: n.type,
         });
       });
-    }
-    return pos;
+    });
+    return { pos, layers };
   };
 
   global.NEAT = NEAT;

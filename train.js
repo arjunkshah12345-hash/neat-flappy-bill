@@ -2,6 +2,7 @@
   const POP = 50;
   const DT = 1 / 60;
   const FLAP_T = 0.26;
+  const SPEEDS = [1, 2, 4, 8, 16, 32];
 
   const game = document.getElementById("game");
   const net = document.getElementById("net");
@@ -11,7 +12,7 @@
 
   Official.init();
 
-  let turbo = Number($("turbo").value);
+  let turbo = 4;
   let paused = false;
   let pop = NEAT.createPopulation(POP);
   let world;
@@ -94,6 +95,12 @@
     $("nodes").textContent = champLive ? String(champLive.nodes.length) : "—";
   }
 
+  function airborne(bird) {
+    if (!bird.alive) return false;
+    if (bird.y + Bill.BIRD_H >= Bill.GROUND - 0.5) return false;
+    return true;
+  }
+
   function drawGame() {
     const bi = bestAlive();
     const genBest = Math.max(0, ...birds.map((b) => b.score));
@@ -104,12 +111,12 @@
       score: genBest,
       best: pop.bestScore,
       birds: birds.map((bird, i) => {
-        if (!bird.alive && !bird.falling) return null;
+        if (!airborne(bird)) return null;
         return {
           y: bird.y,
           vy: bird.vy,
           flapT: bird.flapT || 0,
-          alpha: bird.alive ? (i === bi ? 1 : 0.42) : 0.2,
+          alpha: i === bi ? 1 : 0.42,
         };
       }),
     });
@@ -136,9 +143,17 @@
     requestAnimationFrame(frame);
   }
 
-  $("turbo").addEventListener("input", () => {
-    turbo = Number($("turbo").value);
-    $("turboLabel").textContent = turbo + "×";
+  function setSpeed(next) {
+    turbo = SPEEDS.includes(next) ? next : 4;
+    document.querySelectorAll("#speeds button").forEach((btn) => {
+      btn.classList.toggle("active", Number(btn.dataset.speed) === turbo);
+    });
+  }
+
+  $("speeds").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-speed]");
+    if (!btn) return;
+    setSpeed(Number(btn.dataset.speed));
   });
   $("pause").addEventListener("click", () => {
     paused = !paused;
@@ -151,6 +166,6 @@
   });
 
   resetWorld();
-  $("turboLabel").textContent = turbo + "×";
+  setSpeed(4);
   frame();
 })();

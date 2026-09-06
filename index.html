@@ -5,51 +5,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Flappy Bill — NEAT</title>
     <meta name="description" content="Fifty eagles evolve a neural net on the official White House Arcade Flappy Bill playfield." />
-    <meta name="theme-color" content="#080a10" />
+    <meta name="theme-color" content="#0a0a0a" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <header>
-      <div>
-        <p class="kicker">The White House Arcade · NEAT</p>
-        <h1>Flappy Bill</h1>
-        <p class="lede">
-          Same sprites, sky, monuments, columns, and physics as
-          <a href="https://www.whitehouse.gov/arcade/flappy-bill/">whitehouse.gov/arcade/flappy-bill</a>.
-          Fifty eagles evolve a growing neural net each generation.
-        </p>
+    <nav class="top">
+      <a class="brand" href="./">Flappy Bill</a>
+      <div class="nav-pill" role="navigation">
+        <span class="on">Train</span>
+        <a href="https://github.com/arjunkshah12345-hash/neat-flappy-bill">Source</a>
+        <a href="https://www.whitehouse.gov/arcade/flappy-bill/">Arcade</a>
       </div>
-      <dl class="stats">
-        <div><dt>Gen</dt><dd id="gen">1</dd></div>
-        <div><dt>Alive</dt><dd id="alive">50</dd></div>
-        <div><dt>Score</dt><dd id="score">0</dd></div>
-        <div><dt>Best</dt><dd id="best">0</dd></div>
-        <div><dt>Species</dt><dd id="species">1</dd></div>
-        <div><dt>Innov</dt><dd id="innov">0</dd></div>
-        <div><dt>Nodes</dt><dd id="nodes">—</dd></div>
-      </dl>
+    </nav>
+
+    <header class="hero">
+      <p class="eyebrow">NEAT · 50 birds / generation</p>
+      <h1>Keep the bill in the air.</h1>
+      <p class="lede">
+        Official White House Arcade sprites and physics.
+        The chrome is a dial — pick a speed and watch the champ brain grow layers.
+      </p>
     </header>
 
-    <main>
-      <section class="cabinet">
+    <section class="stage">
+      <div class="cabinet">
         <canvas id="game" width="256" height="224" aria-label="Flappy Bill"></canvas>
-      </section>
-      <section class="panel grow">
-        <h2>Brain of the living champ</h2>
-        <canvas id="net" width="720" height="560"></canvas>
-        <p class="hint">
-          Sensors on the left. Gold pulses ride active weights. FLAP fires above 0.10.
-          Hidden nodes appear when NEAT splits a gene.
-        </p>
-      </section>
-    </main>
+      </div>
 
-    <footer>
-      <label>Turbo <input id="turbo" type="range" min="1" max="24" value="4" /> <span id="turboLabel">4×</span></label>
-      <button id="pause" type="button">Pause</button>
-      <button id="reset" type="button">New population</button>
-    </footer>
+      <aside class="dial" aria-label="Trainer controls">
+        <div class="folder">
+          <h3>Speed</h3>
+          <div class="seg" id="speeds" role="group" aria-label="Simulation speed">
+            <button type="button" data-speed="1">1×</button>
+            <button type="button" data-speed="2">2×</button>
+            <button type="button" data-speed="4" class="active">4×</button>
+            <button type="button" data-speed="8">8×</button>
+            <button type="button" data-speed="16">16×</button>
+            <button type="button" data-speed="32">32×</button>
+          </div>
+        </div>
+
+        <div class="folder">
+          <h3>Run</h3>
+          <div class="actions">
+            <button id="pause" type="button">Pause</button>
+            <button id="reset" type="button">New pop</button>
+          </div>
+        </div>
+
+        <div class="folder">
+          <h3>Population</h3>
+          <dl class="rows">
+            <div><dt>Gen</dt><dd id="gen">1</dd></div>
+            <div><dt>Alive</dt><dd id="alive">50</dd></div>
+            <div><dt>Score</dt><dd id="score">0</dd></div>
+            <div><dt>Best</dt><dd id="best">0</dd></div>
+            <div><dt>Species</dt><dd id="species">1</dd></div>
+            <div><dt>Innov</dt><dd id="innov">0</dd></div>
+            <div><dt>Nodes</dt><dd id="nodes">—</dd></div>
+          </dl>
+        </div>
+      </aside>
+    </section>
+
+    <section class="brain">
+      <div class="brain-head">
+        <h2>Champ brain</h2>
+        <p>Input layer · hidden layers · output. Hidden nodes appear when NEAT splits a gene.</p>
+      </div>
+      <canvas id="net" width="960" height="420" aria-label="Neural network"></canvas>
+    </section>
 
     <script src="physics.js"></script>
     <script src="official-render.js"></script>
