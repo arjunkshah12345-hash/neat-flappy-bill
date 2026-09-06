@@ -2,7 +2,9 @@
 
 Fifty eagles learn to keep the bill in the air, using the **same art and physics** as the public [White House Arcade Flappy Bill](https://www.whitehouse.gov/arcade/flappy-bill/) game.
 
-Open `index.html` (or any static server). The 256×224 stage is the official pixel playfield: sky gradient, sun, clouds, DC skyline, cherry/elm trees, fluted columns, eagle frames, and the 5×7 score font.
+**Play:** [neat-flappy-bill.vercel.app](https://neat-flappy-bill.vercel.app) · **Source:** [github.com/arjunkshah12345-hash/neat-flappy-bill](https://github.com/arjunkshah12345-hash/neat-flappy-bill)
+
+The 256×224 stage is the official pixel playfield: sky gradient, sun, clouds, DC skyline, cherry/elm trees, fluted columns, eagle frames, and the 5×7 score font. The panel beside it is a live NEAT diagram — sensors, flowing weights, FLAP gauge, and a trace.
 
 ## What is official vs what is ours
 

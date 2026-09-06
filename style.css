@@ -108,7 +108,14 @@ main {
 }
 
 .panel.grow {
-  flex: 1 1 360px;
+  flex: 1 1 420px;
+  min-height: 672px;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel.grow canvas {
+  flex: 1 1 auto;
 }
 
 canvas {
@@ -126,8 +133,9 @@ canvas {
 
 #net {
   width: 100%;
-  height: auto;
+  min-height: 560px;
   background: #0b1020;
+  image-rendering: auto;
 }
 
 footer {

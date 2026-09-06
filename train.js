@@ -18,6 +18,7 @@
   let birds;
   let champLive = null;
   let lastAct = null;
+  let lastInputs = [];
   let time = 0;
   let scroll = 0;
 
@@ -30,6 +31,7 @@
     });
     champLive = null;
     lastAct = null;
+    lastInputs = [];
     time = 0;
     scroll = 0;
   }
@@ -67,7 +69,8 @@
     const bi = bestAlive();
     if (bi >= 0) {
       champLive = pop.genomes[bi];
-      lastAct = NEAT.activate(champLive, Bill.inputs(birds[bi], world));
+      lastInputs = Bill.inputs(birds[bi], world);
+      lastAct = NEAT.activate(champLive, lastInputs);
     }
 
     const alive = birds.filter((b) => b.alive).length;
@@ -113,62 +116,14 @@
   }
 
   function drawNet() {
-    nctx.fillStyle = "#0b1020";
-    nctx.fillRect(0, 0, net.width, net.height);
-    const g = champLive || pop.champ || pop.genomes[0];
-    if (!g) return;
-    const pos = NEAT.layoutNetwork(g, net.width, net.height);
-    const values = lastAct ? lastAct.value : new Map();
-
-    for (const c of g.genes) {
-      const a = pos.get(c.in);
-      const b = pos.get(c.out);
-      if (!a || !b) continue;
-      const w = c.weight;
-      nctx.beginPath();
-      nctx.strokeStyle = c.enabled
-        ? w >= 0
-          ? `rgba(80, 220, 140, ${Math.min(1, 0.25 + Math.abs(w) * 0.35)})`
-          : `rgba(232, 90, 90, ${Math.min(1, 0.25 + Math.abs(w) * 0.35)})`
-        : "rgba(255,255,255,0.08)";
-      nctx.lineWidth = c.enabled ? 1 + Math.min(4, Math.abs(w) * 1.4) : 1;
-      nctx.moveTo(a.x, a.y);
-      nctx.lineTo(b.x, b.y);
-      nctx.stroke();
-    }
-
-    for (const n of g.nodes) {
-      const p = pos.get(n.id);
-      if (!p) continue;
-      const act = values.get(n.id);
-      const glow = act == null ? 0 : Math.abs(act);
-      nctx.beginPath();
-      nctx.fillStyle =
-        n.type === "input" ? "#4f8ec9" : n.type === "output" ? "#ffe680" : "#c47a5f";
-      nctx.arc(p.x, p.y, 8 + glow * 3, 0, Math.PI * 2);
-      nctx.fill();
-      nctx.strokeStyle = "rgba(255,255,255,0.35)";
-      nctx.lineWidth = 1;
-      nctx.stroke();
-    }
-
-    nctx.fillStyle = "#9aa4b6";
-    nctx.font = "11px ui-monospace, monospace";
-    NEAT.INPUT_LABELS.forEach((label, i) => {
-      const p = pos.get(i);
-      if (p) nctx.fillText(label, 6, p.y + 4);
+    NetViz.draw(net, nctx, {
+      genome: champLive || pop.champ || pop.genomes[0],
+      values: lastAct ? lastAct.value : new Map(),
+      inputs: lastInputs,
+      flap: lastAct ? lastAct.flap : false,
+      output: lastAct ? lastAct.output : 0,
+      time,
     });
-    const out = g.nodes.find((n) => n.type === "output");
-    if (out) {
-      const p = pos.get(out.id);
-      if (p) nctx.fillText("FLAP", net.width - 34, p.y - 14);
-    }
-    nctx.fillStyle = "#e8edf5";
-    nctx.fillText(
-      `hidden ${g.nodes.filter((n) => n.type === "hidden").length}  ·  genes ${g.genes.length}`,
-      12,
-      net.height - 12
-    );
   }
 
   function frame() {
@@ -191,6 +146,7 @@
   });
   $("reset").addEventListener("click", () => {
     pop = NEAT.createPopulation(POP);
+    NetViz.reset();
     resetWorld();
   });
 

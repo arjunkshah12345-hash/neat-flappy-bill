@@ -690,5 +690,9 @@ Official.draw = function (ctx, state) {
   }
 };
 
+Official.text = G;
+Official.centerText = H;
+Official.textWidth = N;
+
 global.Official = Official;
 })(window);

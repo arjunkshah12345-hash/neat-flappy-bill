@@ -7,6 +7,7 @@
   const NEAT = {
     INPUT_LABELS: ["DX", "Y", "TOP", "BOT", "VY"],
     OUTPUT_LABELS: ["FLAP"],
+    FLAP_THRESHOLD: 0.1,
   };
 
   let innov = 0;
@@ -77,7 +78,8 @@
       value.set(id, Math.tanh(sum));
     }
     const outId = g.nodes.find((n) => n.type === "output").id;
-    return { flap: (value.get(outId) || 0) > 0.1, value };
+    const output = value.get(outId) || 0;
+    return { flap: output > NEAT.FLAP_THRESHOLD, output, value };
   };
 
   function mutateWeights(g) {
@@ -215,27 +217,51 @@
     return pop;
   };
 
-  NEAT.layoutNetwork = function (g, w, h) {
-    const pad = 36;
-    const inputs = g.nodes.filter((n) => n.type === "input");
-    const hidden = g.nodes.filter((n) => n.type === "hidden");
-    const outputs = g.nodes.filter((n) => n.type === "output");
+  NEAT.nodeDepths = function (g) {
+    const byId = new Map(g.nodes.map((n) => [n.id, n]));
+    const depth = new Map();
+    for (const n of g.nodes) depth.set(n.id, n.type === "input" ? 0 : 1);
+    for (let pass = 0; pass < g.nodes.length + 2; pass++) {
+      for (const c of g.genes) {
+        if (!c.enabled) continue;
+        const dst = byId.get(c.out);
+        if (!dst || dst.type !== "hidden") continue;
+        depth.set(dst.id, Math.max(depth.get(dst.id) || 1, (depth.get(c.in) || 0) + 1));
+      }
+    }
+    const hid = g.nodes.filter((n) => n.type === "hidden");
+    const hidMax = hid.length ? Math.max(...hid.map((n) => depth.get(n.id) || 1)) : 0;
+    for (const n of g.nodes) {
+      if (n.type === "output") depth.set(n.id, hidMax + 1);
+    }
+    return depth;
+  };
+
+  NEAT.layoutNetwork = function (g, w, h, opts) {
+    const padL = opts && opts.padL != null ? opts.padL : 148;
+    const padR = opts && opts.padR != null ? opts.padR : 128;
+    const padT = opts && opts.padT != null ? opts.padT : 44;
+    const padB = opts && opts.padB != null ? opts.padB : 68;
+    const depths = NEAT.nodeDepths(g);
+    const maxD = Math.max(1, ...depths.values());
+    const buckets = new Map();
+    for (const n of g.nodes) {
+      const d = depths.get(n.id) || 0;
+      if (!buckets.has(d)) buckets.set(d, []);
+      buckets.get(d).push(n);
+    }
     const pos = new Map();
-    const place = (list, x) => {
-      list.forEach((n, i) => pos.set(n.id, { x, y: (h * (i + 1)) / (list.length + 1) }));
-    };
-    place(inputs, pad);
-    place(outputs, w - pad);
-    if (hidden.length === 1) pos.set(hidden[0].id, { x: w / 2, y: h / 2 });
-    else if (hidden.length) {
-      const cols = Math.min(4, Math.ceil(Math.sqrt(hidden.length)));
-      hidden.forEach((n, i) => {
-        const col = i % cols;
-        const row = (i / cols) | 0;
-        const rows = Math.ceil(hidden.length / cols);
+    const innerW = w - padL - padR;
+    const innerH = h - padT - padB;
+    for (const [d, list] of buckets) {
+      list.sort((a, b) => a.id - b.id);
+      const x = padL + (innerW * d) / maxD;
+      list.forEach((n, i) => {
         pos.set(n.id, {
-          x: pad + ((w - pad * 2) * (col + 1)) / (cols + 1),
-          y: (h * (row + 1)) / (rows + 1),
+          x,
+          y: padT + (innerH * (i + 1)) / (list.length + 1),
+          depth: d,
+          type: n.type,
         });
       });
     }

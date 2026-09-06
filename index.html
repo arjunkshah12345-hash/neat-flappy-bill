@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Flappy Bill — NEAT</title>
+    <meta name="description" content="Fifty eagles evolve a neural net on the official White House Arcade Flappy Bill playfield." />
+    <meta name="theme-color" content="#080a10" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -34,8 +37,11 @@
       </section>
       <section class="panel grow">
         <h2>Brain of the living champ</h2>
-        <canvas id="net" width="560" height="224"></canvas>
-        <p class="hint">Green excites flap. Red inhibits. Hidden nodes appear as NEAT mutates.</p>
+        <canvas id="net" width="720" height="560"></canvas>
+        <p class="hint">
+          Sensors on the left. Gold pulses ride active weights. FLAP fires above 0.10.
+          Hidden nodes appear when NEAT splits a gene.
+        </p>
       </section>
     </main>
 
@@ -48,6 +54,7 @@
     <script src="physics.js"></script>
     <script src="official-render.js"></script>
     <script src="neat.js"></script>
+    <script src="net.js"></script>
     <script src="train.js"></script>
   </body>
 </html>
