@@ -668,12 +668,18 @@ Official.draw = function (ctx, state) {
   if (state.showHud !== false) {
     var label = String(score);
     var scale = 3;
+    var pop = state.scorePop || 0;
     var sx = Math.round((L - N(label, scale)) / 2);
-    G(b, label, sx + 1, 15, "rgba(10, 20, 34, 0.55)", scale);
-    G(b, label, sx, 14, "#ffffff", scale);
+    var sy = 14 - Math.round(pop * 3);
+    G(b, label, sx + 1, sy + 1, "rgba(10, 20, 34, 0.55)", scale);
+    G(b, label, sx, sy, "#ffffff", scale);
     if (best > 0) {
       G(b, "BEST " + best, 5, 6, "rgba(10, 20, 34, 0.5)");
       G(b, "BEST " + best, 4, 5, "#ffe680");
+    }
+    if (state.gen) {
+      G(b, "GEN " + state.gen, 5, E - 12, "rgba(10, 20, 34, 0.5)");
+      G(b, "GEN " + state.gen, 4, E - 13, "#ffe680");
     }
   }
 

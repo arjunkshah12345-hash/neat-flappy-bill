@@ -82,15 +82,16 @@
   }
   function spawnColumn(world, x) {
     const gap = Bill.gapSize(world.score);
+    world.nextId = (world.nextId || 0) + 1;
     world.columns.push({
+      id: world.nextId,
       x,
       gap,
       gapY: nextGapY(world.rand, world.columns, gap),
-      passed: false,
     });
   }
   Bill.makeWorld = function (seed) {
-    const world = { seed, rand: Bill.rng(seed), columns: [], score: 0 };
+    const world = { seed, rand: Bill.rng(seed), columns: [], score: 0, nextId: 0 };
     spawnColumn(world, Bill.W + Bill.FIRST_COL);
     while (world.columns[world.columns.length - 1].x < Bill.W) {
       spawnColumn(world, world.columns[world.columns.length - 1].x + Bill.COL_SPACING);
@@ -107,7 +108,7 @@
     }
   };
   Bill.makeBird = function () {
-    return { y: Bill.START_Y, vy: 0, alive: true, falling: false, score: 0, frames: 0, passed: 0 };
+    return { y: Bill.START_Y, vy: 0, alive: true, falling: false, score: 0, frames: 0, seen: new Set() };
   };
   Bill.flap = function (bird) {
     if (!bird.alive || bird.falling) return;
@@ -146,13 +147,11 @@
       }
     }
     const cx = Bill.BIRD_X + Bill.BIRD_W / 2;
-    let passed = 0;
     for (const col of world.columns) {
-      if (col.x + Bill.COL_W <= cx) passed += 1;
-    }
-    if (passed > bird.passed) {
-      bird.score += passed - bird.passed;
-      bird.passed = passed;
+      if (col.x + Bill.COL_W > cx) continue;
+      if (bird.seen.has(col.id)) continue;
+      bird.seen.add(col.id);
+      bird.score += 1;
       world.score = Math.max(world.score, bird.score);
     }
   };

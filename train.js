@@ -22,6 +22,8 @@
   let lastInputs = [];
   let time = 0;
   let scroll = 0;
+  let scorePop = 0;
+  let shownScore = 0;
 
   function resetWorld() {
     world = Bill.makeWorld((Math.random() * 1e9) | 0);
@@ -35,6 +37,7 @@
     lastInputs = [];
     time = 0;
     scroll = 0;
+    shownScore = 0;
   }
 
   function bestAlive() {
@@ -75,8 +78,13 @@
     }
 
     const alive = birds.filter((b) => b.alive).length;
-    const genBest = Math.max(...birds.map((b) => b.score));
+    const genBest = Math.max(0, ...birds.map((b) => b.score));
     if (genBest > pop.bestScore) pop.bestScore = genBest;
+    if (genBest > shownScore) {
+      shownScore = genBest;
+      scorePop = 1;
+    }
+    scorePop = Math.max(0, scorePop - DT * 3.5);
 
     if (alive === 0) {
       pop.genomes.forEach((g, i) => {
@@ -110,6 +118,8 @@
       columns: world.columns,
       score: genBest,
       best: pop.bestScore,
+      scorePop,
+      gen: pop.gen,
       birds: birds.map((bird, i) => {
         if (!airborne(bird)) return null;
         return {

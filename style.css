@@ -34,6 +34,10 @@ body {
   flex-direction: column;
 }
 
+html.rec .top {
+  display: none;
+}
+
 a {
   color: inherit;
   text-decoration: none;
